@@ -1,176 +1,351 @@
+'use client';
 
-import { groqChat } from '@/lib/groq';
-import { createClient } from '@supabase/supabase-js';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-export async function POST(
-  request
-) {
+import {
+  FileText,
+  Activity,
+  AlertTriangle,
+  Brain,
+} from 'lucide-react';
 
-  try {
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
 
-    const {
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 
-      message,
+const COLORS = [
+  '#3B82F6',
+  '#14B8A6',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+];
 
-      reportId,
+export default function DashboardPage() {
 
-    } =
-      await request.json();
+  const { user } =
+    useAuthStore();
 
-    console.log(
-      'REPORT ID:',
-      reportId
-    );
+  const [reports, setReports] =
+    useState<any[]>([]);
 
-    /*
-    =========================
-    GET REPORT ANALYSIS
-    =========================
-    */
+  const [analyses, setAnalyses] =
+    useState<any[]>([]);
 
-    const {
+  const [loading, setLoading] =
+    useState(true);
 
-      data: analysis,
+  const [categoryData, setCategoryData] =
+    useState<any[]>([]);
 
-      error,
+  const [weeklyData, setWeeklyData] =
+    useState<any[]>([]);
 
-    } =
-      await supabase
-        .from(
-          'report_analyses'
-        )
-        .select('*')
-        .eq(
-          'report_id',
-          reportId
-        )
-        .single();
+  const [
+    aiRecommendations,
+    setAiRecommendations,
+  ] =
+    useState<string[]>([]);
 
-    console.log(
-      'ANALYSIS:',
-      analysis
-    );
+  useEffect(() => {
 
-    console.log(
-      'SUPABASE ERROR:',
-      error
-    );
-
-    /*
-    =========================
-    REPORT CONTEXT
-    =========================
-    */
-
-    let reportContext =
-      'No report found';
-
-    if (analysis) {
-
-      reportContext = `
-
-Summary:
-${analysis.summary || ''}
-
-Key Findings:
-${JSON.stringify(
-  analysis.key_findings || []
-)}
-
-Abnormal Values:
-${JSON.stringify(
-  analysis.abnormal_values || []
-)}
-
-Recommendations:
-${JSON.stringify(
-  analysis.recommendations || []
-)}
-
-Patient Explanation:
-${analysis.patient_explanation || ''}
-
-`;
+    if (user?.id) {
+      loadDashboard();
     }
 
-    /*
-    =========================
-    SYSTEM PROMPT
-    =========================
-    */
+  }, [user?.id]);
 
-    const systemPrompt = `
+  async function loadDashboard() {
 
-You are HealX AI.
+    if (!user?.id) return;
 
-You help users understand medical reports.
+    try {
 
-Use ONLY this report data.
+      const {
+        data: reportsData,
+      } =
+        await supabase
+          .from(
+            'medical_reports'
+          )
+          .select('*')
+          .eq(
+            'user_id',
+            user.id
+          );
 
-${reportContext}
+      const {
+        data: analysesData,
+      } =
+        await supabase
+          .from(
+            'report_analyses'
+          )
+          .select('*')
+          .eq(
+            'user_id',
+            user.id
+          );
 
-Explain abnormalities clearly.
+      setReports(
+        reportsData || []
+      );
 
-Answer in simple language.
+      setAnalyses(
+        analysesData || []
+      );
 
-Always recommend consulting a doctor.
+      const categoryMap:
+      Record<string, number> =
+      {};
 
-`;
+      (
+        reportsData || []
+      ).forEach(
+        (
+          report: any
+        ) => {
 
-    /*
-    =========================
-    GROQ
-    =========================
-    */
+          const category =
+            report.category ||
+            'other';
 
-    const response =
-      await groqChat({
+          categoryMap[
+            category
+          ] =
+            (
+              categoryMap[
+                category
+              ] || 0
+            ) + 1;
+        }
+      );
 
-        messages: [
+      setCategoryData(
 
-          {
-            role:
-              'system',
+        Object.keys(
+          categoryMap
+        ).map(
+          key => ({
+            name:
+              key,
 
-            content:
-              systemPrompt,
-          },
+            value:
+              categoryMap[
+                key
+              ],
+          })
+        )
+      );
 
-          {
-            role:
-              'user',
+      const weeklyMap:
+      Record<
+        string,
+        number
+      > = {
 
-            content:
-              message,
-          },
-        ],
+        Mon: 0,
+        Tue: 0,
+        Wed: 0,
+        Thu: 0,
+        Fri: 0,
+        Sat: 0,
+        Sun: 0,
 
-        temperature: 0.3,
-      });
+      };
 
-    return Response.json({
-      response,
-    });
+      (
+        reportsData || []
+      ).forEach(
+        (
+          report: any
+        ) => {
 
-  } catch (error) {
+          const day =
+            new Date(
+              report.created_at
+            )
+              .toLocaleDateString(
+                'en-US',
+                {
+                  weekday:
+                    'short',
+                }
+              );
 
-    console.log(
-      'CHAT ERROR:',
-      error
-    );
+          if (
+            weeklyMap[
+              day
+            ] !==
+            undefined
+          ) {
 
-    return Response.json(
-      {
-        error:
-          'Chat failed',
-      },
-      {
-        status: 500,
+            weeklyMap[
+              day
+            ] += 1;
+          }
+        }
+      );
+
+      setWeeklyData(
+
+        Object.keys(
+          weeklyMap
+        ).map(
+          day => ({
+            day,
+            reports:
+              weeklyMap[
+                day
+              ],
+          })
+        )
+      );
+
+      const recommendations:
+      string[] =
+      [];
+
+      (
+        analysesData || []
+      ).forEach(
+        (
+          analysis: any
+        ) => {
+
+          if (
+            analysis
+              .abnormal_values
+              ?.length
+          ) {
+
+            recommendations.push(
+
+              `Your report contains ${analysis.abnormal_values.length} abnormal values.`
+
+            );
+          }
+
+          analysis
+            .recommendations
+            ?.forEach(
+              (
+                item:
+                string
+              ) =>
+                recommendations.push(
+                  item
+                )
+            );
+        }
+      );
+
+      if (
+        recommendations
+          .length === 0
+      ) {
+
+        recommendations.push(
+
+          'Upload reports to receive AI recommendations.'
+
+        );
       }
+
+      setAiRecommendations(
+
+        recommendations
+          .slice(
+            0,
+            5
+          )
+      );
+
+    } finally {
+
+      setLoading(
+        false
+      );
+    }
+  }
+
+  const totalReports =
+    reports.length;
+
+  const totalAnalyses =
+    analyses.length;
+
+  const abnormalReports =
+    analyses.filter(
+      (
+        a: any
+      ) =>
+        a
+          .abnormal_values
+          ?.length
+    ).length;
+
+  if (loading) {
+
+    return (
+
+      <div className="p-10 text-center">
+
+        Loading dashboard...
+
+      </div>
     );
   }
+
+  return (
+
+    <div className="p-8">
+
+      <h1 className="text-4xl font-bold">
+
+        Dashboard
+
+      </h1>
+
+      <p className="mt-4">
+
+        Reports:
+        {' '}
+        {totalReports}
+
+      </p>
+
+      <p>
+
+        Analyses:
+        {' '}
+        {totalAnalyses}
+
+      </p>
+
+      <p>
+
+        Abnormal:
+        {' '}
+        {abnormalReports}
+
+      </p>
+
+    </div>
+  );
 }
