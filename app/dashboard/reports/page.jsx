@@ -19,7 +19,7 @@ import { useDropzone } from 'react-dropzone';
 
 import Tesseract from 'tesseract.js';
 
-import pdfParse from 'pdf-parse';
+import * as pdfParse from "pdf-parse";
 
 import {
   Upload,
