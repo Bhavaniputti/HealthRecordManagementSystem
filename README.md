@@ -1,66 +1,215 @@
-# 🏥 Health Record Management System
+# 🏥 HealthRecordManagementSystem – Smart Health Record Manager
 
-A secure and modern web application for storing, managing, and accessing health records digitally.
+AI-powered Smart Health Record Management System that helps users securely upload, manage, analyze, chat with, and share medical reports.
 
-## 🚀 Features
-
-* User Login & Authentication
-* Upload Health Records
-* View Uploaded Records
-* Search Health Records
-* Secure Record Storage
-* Responsive Dashboard
-* Cloud Database Integration
-* Fast Deployment Support
+The platform simplifies healthcare document management by providing intelligent report analysis, AI-powered explanations, secure sharing, and centralized health record storage.
 
 ---
 
-## 🛠 Tech Stack
+# 🚀 Features
 
-### Frontend
-
-* Next.js
-* React.js
-* Tailwind CSS
-
-### Backend
-
-* Next.js API Routes
-
-### Database
-
-* Supabase
-
-### Deployment
-
-* Vercel
+## 📄 Medical Report Management
+- Upload medical reports (PDF/Image)
+- Store reports securely
+- Categorize reports:
+  - Lab
+  - Radiology
+  - Prescription
+  - Consultation
+  - Discharge
+  - General
 
 ---
 
-## 📦 Installation
+## 🤖 AI Report Analysis
 
-Clone the repository:
+Generate AI-powered analysis for uploaded reports:
 
-```bash
-git clone https://github.com/your-username/HealthRecordManagementSystem.git
-cd HealthRecordManagementSystem
+- Report Summary
+- Key Findings
+- Medications Detection
+- Abnormal Values Detection
+- Recommendations
+- Patient Friendly Explanation
+- Report Type Classification
+
+Powered using:
+
+- Groq API
+- Llama Models
+
+---
+
+## 💬 AI Medical Chat
+
+Users can:
+
+- Select specific report
+- Ask questions
+
+Example:
+
+```txt
+Explain this blood report
 ```
 
-Install dependencies:
+```txt
+What does TSH value mean?
+```
+
+```txt
+Is this report abnormal?
+```
+
+AI answers using selected report context.
+
+---
+
+## 📊 Smart Dashboard
+
+Dynamic dashboard includes:
+
+- Total Reports
+- AI Analyses
+- Report Categories
+- Weekly Upload Trends
+- AI Recommendations
+- Abnormal Reports Summary
+
+---
+
+## 🔒 Secure Report Sharing
+
+Users can securely share reports.
+
+Features:
+
+- Generate private share link
+- Password protection
+- Expiry time selection
+- Limited attempts
+- Auto-lock after failed attempts
+
+Flow:
+
+```txt
+Create Share Link
+↓
+Set Password
+↓
+Set Expiry
+↓
+Copy Link
+↓
+Secure Access
+```
+
+---
+
+## 👤 User Profile
+
+Users can:
+
+- Update profile
+- Manage personal information
+- Track uploaded reports
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- Next.js
+- React.js
+- Tailwind CSS
+- Framer Motion
+- Recharts
+
+---
+
+## Backend
+
+- Next.js API Routes
+- Supabase
+
+---
+
+## Database
+
+- Supabase Database
+
+---
+
+## Authentication
+
+- Supabase Auth
+
+---
+
+## AI
+
+- Groq API
+- Llama 3
+
+---
+
+## Storage
+
+- Supabase Storage
+
+---
+
+# 📂 Project Structure
+
+```txt
+app/
+│
+├── dashboard/
+├── reports/
+├── chat/
+├── sharing/
+├── profile/
+├── api/
+│
+components/
+│
+lib/
+│
+store/
+│
+supabase/
+```
+
+---
+
+# ⚙ Installation
+
+Clone repository:
+
+```bash
+git clone YOUR_REPO_LINK
+```
+
+Install packages:
 
 ```bash
 npm install
 ```
 
-Create `.env.local`
+Create environment:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_SUPABASE_URL=
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+SUPABASE_SERVICE_ROLE_KEY=
+
+NEXT_PUBLIC_GROQ_API_KEY=
 ```
 
-Start development server:
+Run:
 
 ```bash
 npm run dev
@@ -68,56 +217,67 @@ npm run dev
 
 Open:
 
-```text
+```txt
 http://localhost:3000
 ```
 
 ---
 
-## 📁 Project Structure
+# 🧠 AI Workflow
 
-```plaintext
-app/
-components/
-lib/
-public/
-styles/
+```txt
+Upload Report
+↓
+
+Extract Text
+
+↓
+
+Generate Analysis
+
+↓
+
+Store Analysis
+
+↓
+
+Chat With AI
+
+↓
+
+Secure Share
 ```
 
 ---
 
-## 🌐 Deployment
+# 🔐 Security Features
 
-Deploy using Vercel.
-
-Build:
-
-```bash
-npm run build
-```
-
-Add environment variables in Vercel before deployment.
+- Authentication
+- Row Level Security
+- Secure Sharing
+- Password Protected Links
+- Expiring Access
+- Access Attempt Limits
 
 ---
 
-## 🔒 Security
+# 📈 Future Scope
 
-* Secure authentication
-* Protected health records
-* Controlled access
-
----
-
-## 📌 Future Enhancements
-
-* Record sharing
-* Expiry links
-* PIN protection
-* Doctor dashboard
-* Analytics
+- OCR Improvements
+- Doctor Collaboration
+- Appointment Booking
+- Health Insights
+- Voice Assistant
+- Multi-language Support
 
 ---
 
-## 👩‍💻 Author
+# 👩‍💻 Developed By
 
-Bhavani Putti
+Bhavani
+
+---
+
+# ⭐ HealX
+
+AI Powered Healthcare Record Management Platform
